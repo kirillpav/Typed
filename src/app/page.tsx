@@ -1,28 +1,21 @@
 "use client";
-
+import quotes from "../json/quotes.json";
 import { useState, useEffect, useMemo } from "react";
 
 type Quote = {
-	text: string;
-	author: string;
+	quote: string;
+	movieName: string;
 };
 
-const randomQuote = () => {
-	return fetch("https://type.fit/api/quotes")
-		.then((response) => {
-			return response.json();
-		})
-		.then((data) => {
-			const randomIndex = Math.floor(Math.random() * data.length);
-			return data[randomIndex];
-		});
+const randomQuote = (): Quote => {
+	return quotes[Math.floor(quotes.length * Math.random())];
 };
 
 export default function Home() {
 	const [quote, setQuote] = useState<Quote>();
 	const [text, setText] = useState<string>("");
 	const [currentWord, setCurrentWord] = useState<string>();
-	const quotesSplit = useMemo(() => quote?.text?.split(" ") ?? [], [quote]);
+	const quotesSplit = useMemo(() => quote?.quote?.split(" ") ?? [], [quote]);
 	const [wordIdx, setWordIdx] = useState<number>(0);
 
 	useEffect(() => {
@@ -46,14 +39,14 @@ export default function Home() {
 	useEffect(() => {
 		const latestLetter = text?.charAt(text.length - 1);
 		if (latestLetter != " " && wordIdx != quotesSplit.length - 1) return;
-		const textWithoutTrailingSpace = quote?.text.replace(/\s*$/, "");
+		const textWithoutTrailingSpace = quote?.quote.replace(/\s*$/, "");
 		if (textWithoutTrailingSpace == currentWord) {
 			setText("");
 			setWordIdx(() => wordIdx + 1);
 		}
 	}, [text, currentWord, wordIdx, quotesSplit]);
 
-	// Quote Reset
+	// Quote reset
 	useEffect(() => {
 		if (wordIdx == quotesSplit.length) {
 			setQuote(randomQuote());
@@ -64,7 +57,7 @@ export default function Home() {
 		<div className="px-20">
 			<h1 className="mb-4">TYPERACER</h1>
 			<p className="font-mono">
-				<span className="text-black">{quote?.text}</span>
+				<span className="text-black">{quote?.quote}</span>
 			</p>
 			<input
 				className="w-full border-black border px-4 py-2"
