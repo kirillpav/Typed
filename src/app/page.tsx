@@ -15,7 +15,7 @@ export default function Home() {
 	const [quote, setQuote] = useState<Quote>();
 	const [text, setText] = useState<string>("");
 	const [currentWord, setCurrentWord] = useState<string>();
-	const quotesSplit = useMemo(() => quote?.quote?.split(" ") ?? [], [quote]);
+	const quotesSplit = useMemo(() => quote?.quote.split(" ") ?? [], [quote]);
 	const [wordIdx, setWordIdx] = useState<number>(0);
 
 	useEffect(() => {
@@ -39,8 +39,9 @@ export default function Home() {
 	useEffect(() => {
 		const latestLetter = text?.charAt(text.length - 1);
 		if (latestLetter != " " && wordIdx != quotesSplit.length - 1) return;
-		const textWithoutTrailingSpace = quote?.quote.replace(/\s*$/, "");
+		const textWithoutTrailingSpace = text?.replace(/\s*$/, "");
 		if (textWithoutTrailingSpace == currentWord) {
+			console.log(text);
 			setText("");
 			setWordIdx(() => wordIdx + 1);
 		}
