@@ -22,7 +22,7 @@ export default function Home() {
 	const [quote, setQuote] = useState<Quote>();
 	const [text, setText] = useState<string>("");
 	const [currentWord, setCurrentWord] = useState<string>();
-	const quotesSplit = useMemo(() => quote?.quote.split(" ") ?? [], [quote]);
+	const quotesSplit = useMemo(() => quote?.text?.split(" ") ?? [], [quote]);
 	const [wordIdx, setWordIdx] = useState<number>(0);
 
 	useEffect(() => {
@@ -37,6 +37,28 @@ export default function Home() {
 		setWordIdx(0);
 		setText("");
 	}, [quotesSplit]);
+
+	useEffect(() => {
+		setCurrentWord(quotesSplit[wordIdx]);
+	}, [wordIdx, quotesSplit]);
+
+	// Use effect to evaluate user input
+	useEffect(() => {
+		const latestLetter = text?.charAt(text.length - 1);
+		if (latestLetter != " " && wordIdx != quotesSplit.length - 1) return;
+		const textWithoutTrailingSpace = quote?.text.replace(/\s*$/, "");
+		if (textWithoutTrailingSpace == currentWord) {
+			setText("");
+			setWordIdx(() => wordIdx + 1);
+		}
+	}, [text, currentWord, wordIdx, quotesSplit]);
+
+	// Quote Reset
+	useEffect(() => {
+		if (wordIdx == quotesSplit.length) {
+			setQuote(randomQuote());
+		}
+	}, [wordIdx, quotesSplit]);
 
 	return (
 		<div className="px-20">
