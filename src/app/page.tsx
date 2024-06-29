@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 type Quote = {
 	text: string;
@@ -19,7 +19,12 @@ const randomQuote = () => {
 };
 
 export default function Home() {
-	const [quote, setQuote] = useState<Quote | null>();
+	const [quote, setQuote] = useState<Quote>();
+	const [text, setText] = useState<string>("");
+	const [currentWord, setCurrentWord] = useState<string>();
+	const quotesSplit = useMemo(() => quote?.quote.split(" ") ?? [], [quote]);
+	const [wordIdx, setWordIdx] = useState<number>(0);
+
 	useEffect(() => {
 		const fetchQuote = async () => {
 			const quote = await randomQuote();
@@ -28,13 +33,22 @@ export default function Home() {
 		fetchQuote();
 	}, []);
 
+	useEffect(() => {
+		setWordIdx(0);
+		setText("");
+	}, [quotesSplit]);
+
 	return (
 		<div className="px-20">
 			<h1 className="mb-4">TYPERACER</h1>
 			<p className="font-mono">
 				<span className="text-black">{quote?.text}</span>
 			</p>
-			<input className="w-full border-black border px-4 py-2"></input>
+			<input
+				className="w-full border-black border px-4 py-2"
+				onChange={(text) => setText(text.target.value)}
+				value={text}
+			></input>
 		</div>
 	);
 }
