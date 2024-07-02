@@ -2,13 +2,20 @@
 import quotes from "../json/quotes.json";
 import { useState, useEffect, useMemo } from "react";
 
-type Quote = {
-	quote: string;
-	movieName: string;
+type Word = {
+	word: string;
 };
 
-const randomQuote = (): Quote => {
-	return quotes[Math.floor(quotes.length * Math.random())];
+const randomQuote = (): Word => {
+	// return quotes[Math.floor(quotes.length * Math.random())];
+
+	useEffect(() => {
+		fetch(
+			"https://api.api-ninjas.com/v1/randomword".then(
+				(response) => response.json
+			)
+		);
+	});
 };
 
 export default function Home() {
@@ -17,6 +24,7 @@ export default function Home() {
 	const [currentWord, setCurrentWord] = useState<string>();
 	const quotesSplit = useMemo(() => quote?.quote.split(" ") ?? [], [quote]);
 	const [wordIdx, setWordIdx] = useState<number>(0);
+	const [userSetLength, setUserSetLength] = useState<number>(20);
 
 	useEffect(() => {
 		const fetchQuote = async () => {
@@ -57,9 +65,20 @@ export default function Home() {
 	return (
 		<div className="px-20">
 			<h1 className="mb-4">TYPERACER</h1>
-			<p className="font-mono">
-				<span className="text-black">{quote?.quote}</span>
-			</p>
+			<div className="flex justify-between">
+				<p className="font-mono">
+					<span className="text-black">{quote?.quote}</span>
+				</p>
+				<div>
+					<button>15</button>
+					<span>/</span>
+					<button>20</button>
+					<span>/</span>
+					<button>25</button>
+					<span>/</span>
+					<button>50</button>
+				</div>
+			</div>
 			<input
 				className="w-full border-black border px-4 py-2"
 				onChange={(text) => setText(text.target.value)}
