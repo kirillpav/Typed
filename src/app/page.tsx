@@ -7,68 +7,85 @@ type Word = {
 };
 
 export default function Home() {
-	const [quote, setQuote] = useState<Quote>();
+	const [words, setWords] = useState([]);
 	const [text, setText] = useState<string>("");
 	const [currentWord, setCurrentWord] = useState<string>();
-	const quotesSplit = useMemo(() => quote?.quote.split(" ") ?? [], [quote]);
+	// const quotesSplit = useMemo(() => quote?.quote.split(" ") ?? [], [quote]);
 	const [wordIdx, setWordIdx] = useState<number>(0);
 
 	const [userSetLength, setUserSetLength] = useState<number>(20);
 
-	const fetchRandomWord = (): Word => {
+	const fetchRandomWord = (length: number) => {
 		// return quotes[Math.floor(quotes.length * Math.random())];
-		fetch(`https://random-word-api.herokuapp.com/word?number=${userSetLength}`)
-			.then((response) => response.json)
+		return fetch(`https://random-word-api.herokuapp.com/word?number=${length}`)
+			.then((response) => {
+				if (!response.ok) {
+					throw new Error("Network resposne not ok");
+				}
+				return response.json();
+			})
+			.then((data) => {
+				console.log(data);
+				return data;
+			})
 			.catch((error) => console.error(error));
 	};
 
-	useEffect(() => {
-		fetchRandomWord();
-	}, []);
+	const handleButtonClick = (length: number) => {
+		setUserSetLength(length);
+		fetchRandomWord(length).then((fetchedWords) => {
+			setWords(fetchedWords);
+		});
+	};
 
-	useEffect(() => {
-		setWordIdx(0);
-		setText("");
-	}, [quotesSplit]);
+	// useEffect(() => {
+	// 	fetchRandomWord();
+	// }, []);
 
-	useEffect(() => {
-		setCurrentWord(quotesSplit[wordIdx]);
-	}, [wordIdx, quotesSplit]);
+	// useEffect(() => {
+	// 	setWordIdx(0);
+	// 	setText("");
+	// }, [quotesSplit]);
+
+	// useEffect(() => {
+	// 	setCurrentWord(quotesSplit[wordIdx]);
+	// }, [wordIdx, quotesSplit]);
 
 	// Use effect to evaluate user input
-	useEffect(() => {
-		const latestLetter = text?.charAt(text.length - 1);
-		if (latestLetter != " " && wordIdx != quotesSplit.length - 1) return;
-		const textWithoutTrailingSpace = text?.replace(/\s*$/, "");
-		if (textWithoutTrailingSpace == currentWord) {
-			console.log(text);
-			setText("");
-			setWordIdx(() => wordIdx + 1);
-		}
-	}, [text, currentWord, wordIdx, quotesSplit]);
+	// useEffect(() => {
+	// 	const latestLetter = text?.charAt(text.length - 1);
+	// 	if (latestLetter != " " && wordIdx != quotesSplit.length - 1) return;
+	// 	const textWithoutTrailingSpace = text?.replace(/\s*$/, "");
+	// 	if (textWithoutTrailingSpace == currentWord) {
+	// 		console.log(text);
+	// 		setText("");
+	// 		setWordIdx(() => wordIdx + 1);
+	// 	}
+	// }, [text, currentWord, wordIdx, quotesSplit]);
 
 	// Quote reset
-	useEffect(() => {
-		if (wordIdx == quotesSplit.length) {
-			setQuote(randomQuote());
-		}
-	}, [wordIdx, quotesSplit]);
+	// useEffect(() => {
+	// 	setQuote(fetchRandomWord());
+	// }, []);
+
+	// User Set Length Updates
+	useEffect(() => {});
 
 	return (
 		<div className="px-20">
 			<h1 className="mb-4">TYPERACER</h1>
 			<div className="flex justify-between">
 				<p className="font-mono">
-					<span className="text-black">{quote?.quote}</span>
+					{/* <span className="text-black">{text?.word}</span> */}
 				</p>
 				<div>
-					<button onClick={() => setUserSetLength(15)}>15</button>
+					<button onClick={() => handleButtonClick(15)}>15</button>
 					<span>/</span>
-					<button onClick={() => setUserSetLength(20)}>20</button>
+					<button onClick={() => handleButtonClick(20)}>20</button>
 					<span>/</span>
-					<button onClick={() => setUserSetLength(25)}>25</button>
+					<button onClick={() => handleButtonClick(25)}>25</button>
 					<span>/</span>
-					<button onClick={() => setUserSetLength(50)}>50</button>
+					<button onClick={() => handleButtonClick(50)}>50</button>
 				</div>
 			</div>
 			<input
