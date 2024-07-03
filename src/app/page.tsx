@@ -1,6 +1,7 @@
 "use client";
 import quotes from "../json/quotes.json";
 import { useState, useEffect, useMemo } from "react";
+import classNames from "classnames";
 
 type Word = {
 	word: string;
@@ -9,14 +10,14 @@ type Word = {
 export default function Home() {
 	const [words, setWords] = useState([]);
 	const [text, setText] = useState<string>("");
+	const [activeButton, setActiveButton] = useState<number>();
 	const [currentWord, setCurrentWord] = useState<string>();
-	// const quotesSplit = useMemo(() => quote?.quote.split(" ") ?? [], [quote]);
+	const textSplit = useMemo(() => words.split(" ") ?? [], [words]);
 	const [wordIdx, setWordIdx] = useState<number>(0);
 
 	const [userSetLength, setUserSetLength] = useState<number>(20);
 
 	const fetchRandomWord = (length: number) => {
-		// return quotes[Math.floor(quotes.length * Math.random())];
 		return fetch(`https://random-word-api.herokuapp.com/word?number=${length}`)
 			.then((response) => {
 				if (!response.ok) {
@@ -26,6 +27,7 @@ export default function Home() {
 			})
 			.then((data) => {
 				console.log(data);
+				setWords(data);
 				return data;
 			})
 			.catch((error) => console.error(error));
@@ -33,23 +35,24 @@ export default function Home() {
 
 	const handleButtonClick = (length: number) => {
 		setUserSetLength(length);
+		setActiveButton(length);
 		fetchRandomWord(length).then((fetchedWords) => {
 			setWords(fetchedWords);
 		});
 	};
 
-	// useEffect(() => {
-	// 	fetchRandomWord();
-	// }, []);
+	useEffect(() => {
+		fetchRandomWord(10);
+	}, []);
 
-	// useEffect(() => {
-	// 	setWordIdx(0);
-	// 	setText("");
-	// }, [quotesSplit]);
+	useEffect(() => {
+		setWordIdx(0);
+		setText("");
+	}, [quotesSplit]);
 
-	// useEffect(() => {
-	// 	setCurrentWord(quotesSplit[wordIdx]);
-	// }, [wordIdx, quotesSplit]);
+	useEffect(() => {
+		setCurrentWord(quotesSplit[wordIdx]);
+	}, [wordIdx, quotesSplit]);
 
 	// Use effect to evaluate user input
 	// useEffect(() => {
@@ -87,8 +90,8 @@ export default function Home() {
 				<p className="font-mono">{words.join(" ")}</p>
 				<input
 					className="w-full border-black border px-4 py-2"
-					// onChange={(text) => setText(text.target.value)}
-					// value={text}
+					onChange={(text) => setText(text.target.value)}
+					value={text}
 				></input>
 			</div>
 		</div>
