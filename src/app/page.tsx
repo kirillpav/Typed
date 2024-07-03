@@ -74,25 +74,23 @@ export default function Home() {
 	return (
 		<div className="px-20">
 			<h1 className="mb-4">TYPERACER</h1>
-			<div className="flex justify-between">
-				<p className="font-mono">
-					{/* <span className="text-black">{text?.word}</span> */}
-				</p>
-				<div>
-					<button onClick={() => handleButtonClick(15)}>15</button>
-					<span>/</span>
-					<button onClick={() => handleButtonClick(20)}>20</button>
-					<span>/</span>
-					<button onClick={() => handleButtonClick(25)}>25</button>
-					<span>/</span>
-					<button onClick={() => handleButtonClick(50)}>50</button>
-				</div>
+			<div>
+				<button onClick={() => handleButtonClick(15)}>15</button>
+				<span>/</span>
+				<button onClick={() => handleButtonClick(20)}>20</button>
+				<span>/</span>
+				<button onClick={() => handleButtonClick(25)}>25</button>
+				<span>/</span>
+				<button onClick={() => handleButtonClick(50)}>50</button>
 			</div>
-			<input
-				className="w-full border-black border px-4 py-2"
-				onChange={(text) => setText(text.target.value)}
-				value={text}
-			></input>
+			<div className="bg-gray-100">
+				<p className="font-mono">{words.join(" ")}</p>
+				<input
+					className="w-full border-black border px-4 py-2"
+					// onChange={(text) => setText(text.target.value)}
+					// value={text}
+				></input>
+			</div>
 		</div>
 	);
 }
