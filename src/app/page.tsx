@@ -12,7 +12,7 @@ export default function Home() {
 	const [text, setText] = useState<string>("");
 	const [activeButton, setActiveButton] = useState<number>();
 	const [currentWord, setCurrentWord] = useState<string>();
-	const textSplit = useMemo(() => words.split(" ") ?? [], [words]);
+	const textSplit = useMemo(() => words.join(" ").split(" ") ?? [], [words]);
 	const [wordIdx, setWordIdx] = useState<number>(0);
 
 	const [userSetLength, setUserSetLength] = useState<number>(20);
@@ -48,31 +48,28 @@ export default function Home() {
 	useEffect(() => {
 		setWordIdx(0);
 		setText("");
-	}, [quotesSplit]);
+	}, [textSplit]);
 
 	useEffect(() => {
-		setCurrentWord(quotesSplit[wordIdx]);
-	}, [wordIdx, quotesSplit]);
+		setCurrentWord(textSplit[wordIdx]);
+	}, [wordIdx, textSplit]);
 
 	// Use effect to evaluate user input
-	// useEffect(() => {
-	// 	const latestLetter = text?.charAt(text.length - 1);
-	// 	if (latestLetter != " " && wordIdx != quotesSplit.length - 1) return;
-	// 	const textWithoutTrailingSpace = text?.replace(/\s*$/, "");
-	// 	if (textWithoutTrailingSpace == currentWord) {
-	// 		console.log(text);
-	// 		setText("");
-	// 		setWordIdx(() => wordIdx + 1);
-	// 	}
-	// }, [text, currentWord, wordIdx, quotesSplit]);
+	useEffect(() => {
+		const latestLetter = text?.charAt(text.length - 1);
+		if (latestLetter != " " && wordIdx != textSplit.length - 1) return;
+		const textWithoutTrailingSpace = text?.replace(/\s*$/, "");
+		if (textWithoutTrailingSpace == currentWord) {
+			console.log(text);
+			setText("");
+			setWordIdx(() => wordIdx + 1);
+		}
+	}, [text, currentWord, wordIdx, textSplit]);
 
 	// Quote reset
 	// useEffect(() => {
-	// 	setQuote(fetchRandomWord());
+	// 	setWords(fetchRandomWord(20));
 	// }, []);
-
-	// User Set Length Updates
-	useEffect(() => {});
 
 	return (
 		<div className="px-20">
