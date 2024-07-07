@@ -58,9 +58,10 @@ export default function Home() {
 	useEffect(() => {
 		const latestLetter = text?.charAt(text.length - 1);
 		if (latestLetter != " " && wordIdx != textSplit.length - 1) return;
-		const textWithoutTrailingSpace = text?.replace(/\s*$/, "");
-		if (textWithoutTrailingSpace == currentWord) {
-			console.log(text);
+		const textWithoutTrailingSpace = text?.trim();
+		if (textWithoutTrailingSpace === currentWord) {
+			console.log(`Current Word: ${currentWord}`);
+
 			setText("");
 			setWordIdx(() => wordIdx + 1);
 		}
