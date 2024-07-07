@@ -2,6 +2,7 @@
 import quotes from "../json/quotes.json";
 import { useState, useEffect, useMemo } from "react";
 import classNames from "classnames";
+import styles from "../styles/Home.module.css";
 
 type Word = {
 	word: string;
@@ -14,6 +15,8 @@ export default function Home() {
 	const [currentWord, setCurrentWord] = useState<string>();
 	const textSplit = useMemo(() => words.join(" ").split(" ") ?? [], [words]);
 	const [wordIdx, setWordIdx] = useState<number>(0);
+
+	const [score, setScore] = useState<number>(0);
 
 	const [userSetLength, setUserSetLength] = useState<number>(20);
 
@@ -84,8 +87,23 @@ export default function Home() {
 				<span>/</span>
 				<button onClick={() => handleButtonClick(50)}>50</button>
 			</div>
+			<p>
+				Your score is {score} out of {words.length}
+			</p>
 			<div className="bg-gray-100">
-				<p className="font-mono">{words.join(" ")}</p>
+				<p className="font-mono">
+					{textSplit.map((word, idx) => (
+						<span
+							key={idx}
+							className={classNames({
+								[styles.currentWord]: idx === wordIdx,
+								[styles.otherWords]: idx !== wordIdx,
+							})}
+						>
+							{word}{" "}
+						</span>
+					))}
+				</p>
 				<input
 					className="w-full border-black border px-4 py-2"
 					onChange={(text) => setText(text.target.value)}
