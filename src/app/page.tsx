@@ -67,6 +67,7 @@ export default function Home() {
 
 			setText("");
 			setWordIdx(() => wordIdx + 1);
+			setScore(() => score + 1);
 		}
 	}, [text, currentWord, wordIdx, textSplit]);
 
