@@ -5,3 +5,7 @@
 .active {
 	color: tomato;
 }
+
+* {
+	font-family: monospace;
+}

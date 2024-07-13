@@ -52,10 +52,6 @@ export default function Home() {
 	};
 
 	useEffect(() => {
-		fetchRandomWord(10);
-	}, []);
-
-	useEffect(() => {
 		setWordIdx(0);
 		setText("");
 	}, [textSplit]);
@@ -90,6 +86,7 @@ export default function Home() {
 		}
 	}, [text, currentWord, wordIdx, textSplit]);
 
+	useEffect(() => {});
 	// Quote reset
 	// useEffect(() => {
 	// 	setWords(fetchRandomWord(20));
@@ -99,37 +96,45 @@ export default function Home() {
 		<div className="px-20">
 			<h1 className="mb-4">TYPERACER</h1>
 			<div>
-				<button onClick={() => handleButtonClick(15)}>15</button>
-				<span>/</span>
-				<button onClick={() => handleButtonClick(20)}>20</button>
-				<span>/</span>
-				<button onClick={() => handleButtonClick(25)}>25</button>
-				<span>/</span>
-				<button onClick={() => handleButtonClick(50)}>50</button>
-			</div>
-			<p>
-				Your score is {score} out of {words.length}
-			</p>
-			<div className="bg-gray-100">
-				<p className="font-mono">
-					{textSplit.map((word, idx) => (
-						<span
-							key={idx}
-							className={classNames({
-								[styles.currentWord]: idx === wordIdx,
-								[styles.correctWord]: correctWords[idx] === true,
-								[styles.wrongWord]: correctWords[idx] === false,
-							})}
-						>
-							{word + " "}
-						</span>
-					))}
+				<div>
+					<button onClick={() => handleButtonClick(15)}>15</button>
+					<span>/</span>
+					<button onClick={() => handleButtonClick(20)}>20</button>
+					<span>/</span>
+					<button onClick={() => handleButtonClick(25)}>25</button>
+					<span>/</span>
+					<button onClick={() => handleButtonClick(50)}>50</button>
+				</div>
+				<p>
+					Your score is {score} out of {words.length}
 				</p>
-				<input
-					className="w-full border-black border px-4 py-2"
-					onChange={(text) => setText(text.target.value)}
-					value={text}
-				></input>
+				<div className={styles.wordsContainer}>
+					<p className={styles.mainText}>
+						{textSplit.map((word, idx) => (
+							<>
+								<span
+									key={idx}
+									className={classNames({
+										[styles.currentWord]: idx === wordIdx,
+										[styles.correctWord]: correctWords[idx] === true,
+										[styles.wrongWord]: correctWords[idx] === false,
+									})}
+								>
+									{word}
+								</span>
+								<span> </span>
+							</>
+						))}
+					</p>
+					<div className={styles.inputContainer}>
+						<input
+							className={styles.input}
+							onChange={(text) => setText(text.target.value)}
+							value={text}
+						></input>
+						<button className={styles.btn}>Try Again</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	);
