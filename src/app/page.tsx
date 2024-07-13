@@ -71,8 +71,8 @@ export default function Home() {
 		const textWithoutTrailingSpace = text?.trim();
 		if (textWithoutTrailingSpace === currentWord) {
 			console.log(`Current Word: ${currentWord}`);
-			// setText("");
-			// setWordIdx(() => wordIdx + 1);
+			setText("");
+			setWordIdx(() => wordIdx + 1);
 			setScore(score + 1);
 			setCorrectWords((prev) => {
 				const newCorrectWords = [...prev];
@@ -81,15 +81,13 @@ export default function Home() {
 			});
 		} else {
 			setCorrectWords((prev) => {
+				setText("");
+				setWordIdx(() => wordIdx + 1);
 				const newCorrectWords = [...prev];
 				newCorrectWords[wordIdx] = false;
 				return newCorrectWords;
 			});
 		}
-		setTimeout(() => {
-			setText("");
-			setWordIdx(wordIdx + 1);
-		}, 500);
 	}, [text, currentWord, wordIdx, textSplit]);
 
 	// Quote reset
