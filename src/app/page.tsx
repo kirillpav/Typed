@@ -18,6 +18,7 @@ export default function Home() {
 	const [correctWords, setCorrectWords] = useState<Array<boolean | null>>(
 		Array(20).fill(null)
 	);
+	const [topScore, setTopScore] = useState<number>(0);
 
 	const [score, setScore] = useState<number>(0);
 
@@ -49,6 +50,14 @@ export default function Home() {
 			setWordIdx(0);
 			setText("");
 		});
+	};
+
+	const handleTryAgain = () => {
+		setCorrectWords(Array(length).fill(null));
+		fetchRandomWord(userSetLength);
+		setScore(0);
+		setWordIdx(0);
+		setText("");
 	};
 
 	useEffect(() => {
@@ -86,28 +95,30 @@ export default function Home() {
 		}
 	}, [text, currentWord, wordIdx, textSplit]);
 
-	useEffect(() => {});
-	// Quote reset
-	// useEffect(() => {
-	// 	setWords(fetchRandomWord(20));
-	// }, []);
+	useEffect(() => {
+		if (wordIdx > words.length) {
+		}
+	});
 
 	return (
 		<div className="px-20">
-			<h1 className="mb-4">TYPERACER</h1>
-			<div>
-				<div>
-					<button onClick={() => handleButtonClick(15)}>15</button>
-					<span>/</span>
-					<button onClick={() => handleButtonClick(20)}>20</button>
-					<span>/</span>
-					<button onClick={() => handleButtonClick(25)}>25</button>
-					<span>/</span>
-					<button onClick={() => handleButtonClick(50)}>50</button>
+			<h1 className={styles.title}>TYPERACER</h1>
+			{/* <p>Top Score: {topScore}</p> */}
+			<div className={styles.container}>
+				<div className={styles.settingsContainer}>
+					<div>
+						<button onClick={() => handleButtonClick(15)}>15</button>
+						<span>/</span>
+						<button onClick={() => handleButtonClick(20)}>20</button>
+						<span>/</span>
+						<button onClick={() => handleButtonClick(25)}>25</button>
+						<span>/</span>
+						<button onClick={() => handleButtonClick(50)}>50</button>
+					</div>
+					<p>
+						Your score is {score} out of {words.length}
+					</p>
 				</div>
-				<p>
-					Your score is {score} out of {words.length}
-				</p>
 				<div className={styles.wordsContainer}>
 					<p className={styles.mainText}>
 						{textSplit.map((word, idx) => (
@@ -132,7 +143,9 @@ export default function Home() {
 							onChange={(text) => setText(text.target.value)}
 							value={text}
 						></input>
-						<button className={styles.btn}>Try Again</button>
+						<button onClick={handleTryAgain} className={styles.btn}>
+							Try Again
+						</button>
 					</div>
 				</div>
 			</div>
