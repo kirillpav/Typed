@@ -15,6 +15,9 @@ export default function Home() {
 	const [currentWord, setCurrentWord] = useState<string>();
 	const textSplit = useMemo(() => words.join(" ").split(" ") ?? [], [words]);
 	const [wordIdx, setWordIdx] = useState<number>(0);
+	const [correctWords, setCorrectWords] = useState<Array<boolean | null>>(
+		Array(20).fill(null)
+	);
 
 	const [score, setScore] = useState<number>(0);
 
@@ -41,6 +44,10 @@ export default function Home() {
 		setActiveButton(length);
 		fetchRandomWord(length).then((fetchedWords) => {
 			setWords(fetchedWords);
+			setCorrectWords(Array(length).fill(null));
+			setScore(0);
+			setWordIdx(0);
+			setText("");
 		});
 	};
 
@@ -64,11 +71,25 @@ export default function Home() {
 		const textWithoutTrailingSpace = text?.trim();
 		if (textWithoutTrailingSpace === currentWord) {
 			console.log(`Current Word: ${currentWord}`);
-
-			setText("");
-			setWordIdx(() => wordIdx + 1);
-			setScore(() => score + 1);
+			// setText("");
+			// setWordIdx(() => wordIdx + 1);
+			setScore(score + 1);
+			setCorrectWords((prev) => {
+				const newCorrectWords = [...prev];
+				newCorrectWords[wordIdx] = true;
+				return newCorrectWords;
+			});
+		} else {
+			setCorrectWords((prev) => {
+				const newCorrectWords = [...prev];
+				newCorrectWords[wordIdx] = false;
+				return newCorrectWords;
+			});
 		}
+		setTimeout(() => {
+			setText("");
+			setWordIdx(wordIdx + 1);
+		}, 500);
 	}, [text, currentWord, wordIdx, textSplit]);
 
 	// Quote reset
@@ -98,10 +119,11 @@ export default function Home() {
 							key={idx}
 							className={classNames({
 								[styles.currentWord]: idx === wordIdx,
-								[styles.otherWords]: idx !== wordIdx,
+								[styles.correctWord]: correctWords[idx] === true,
+								[styles.wrongWord]: correctWords[idx] === false,
 							})}
 						>
-							{word}{" "}
+							{word + " "}
 						</span>
 					))}
 				</p>

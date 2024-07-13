@@ -2,6 +2,14 @@
 	text-decoration: underline;
 }
 
+.wrongWord {
+	color: red;
+}
+
+.correctWord {
+	color: green;
+}
+
 .otherWords {
 	text-decoration: none;
 }
