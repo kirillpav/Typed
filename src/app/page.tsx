@@ -25,6 +25,9 @@ export default function Home() {
 	const [startTime, setStartTime] = useState<number | null>(null);
 	const [endTime, setEndTime] = useState<number | null>(null);
 	const [timeElapsed, setTimeElapsed] = useState<number | null>(null);
+	// Character Accuracy
+	const [correctCharCount, setCorrectCharCount] = useState<number>(0);
+	const [totalCharCount, setTotalCharCount] = useState<number>(0);
 
 	const fetchRandomWord = (length: number) => {
 		return fetch(`https://random-word-api.herokuapp.com/word?number=${length}`)
@@ -42,9 +45,6 @@ export default function Home() {
 			.catch((error) => console.error(error));
 	};
 
-	const totalNumberOfWords = keyPressCount / 5;
-	const wordsPerMinute = totalNumberOfWords / 1.5;
-
 	const handleButtonClick = (length: number) => {
 		setUserSetLength(length);
 		setActiveButton(length);
@@ -58,6 +58,8 @@ export default function Home() {
 			setStartTime(null);
 			setEndTime(null);
 			setTimeElapsed(null);
+			setCorrectCharCount(0);
+			setTotalCharCount(0);
 		});
 	};
 
@@ -71,6 +73,8 @@ export default function Home() {
 		setStartTime(null);
 		setEndTime(null);
 		setTimeElapsed(null);
+		setCorrectCharCount(0);
+		setTotalCharCount(0);
 	};
 
 	useEffect(() => {
@@ -111,19 +115,28 @@ export default function Home() {
 		}
 	}, [text, currentWord, wordIdx, textSplit]);
 
-	// End of game
-	useEffect(() => {
-		if (wordIdx > words.length && words.length > 0) {
-			setTopScore(Math.max(topScore, score));
-		}
-	}, [wordIdx, words.length, userSetLength]);
-
+	// Handling input Change
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (startTime === null) {
 			setStartTime(Date.now());
 		}
-		setText(e.target.value);
+
+		const value = e.target.value;
+		const lastChar = value.slice(-1);
+
+		if (lastChar !== " " && lastChar !== "\b") {
+			setTotalCharCount((prevCount) => prevCount + 1);
+		}
+
+		setText(value);
 		setKeyPressCount((prevCount) => prevCount + 1);
+
+		if (currentWord) {
+			const correctChars = value
+				.split("")
+				.filter((char, idx) => char === currentWord[idx]).length;
+			setCorrectCharCount(correctChars); // Update to set the count directly
+		}
 	};
 
 	useEffect(() => {
@@ -139,10 +152,15 @@ export default function Home() {
 		return words / minutes;
 	};
 
+	// const calculateAccuracy = () => {
+	// 	if (keyPressCount === 0) return 0;
+	// 	return ((correctCharCount / totalCharCount) * 100).toFixed(2);
+	// };
+
 	return (
 		<div className="px-20">
-			<h1 className={styles.title}>TYPERACER</h1>
-			<p>Top Score: {topScore}</p>
+			<h1 className={styles.title}>TYPED</h1>
+
 			<div className={styles.container}>
 				<div className={styles.settingsContainer}>
 					<div>
@@ -155,9 +173,12 @@ export default function Home() {
 						<button onClick={() => handleButtonClick(50)}>50</button>
 					</div>
 					<p>
-						Your score is {score} out of {words.length}
+						Correct Words: {score} out of {words.length}
 					</p>
-					<p>WPM: {calculateWPM().toFixed(0)}</p>
+					<div>
+						<p>WPM: {calculateWPM().toFixed(0)}</p>
+						{/* <p>ACC: {calculateAccuracy()}%</p> */}
+					</div>
 				</div>
 				<div className={styles.wordsContainer}>
 					<p className={styles.mainText}>
