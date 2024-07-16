@@ -1,6 +1,6 @@
 "use client";
 import quotes from "../json/quotes.json";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, ReactElement } from "react";
 import classNames from "classnames";
 import styles from "../styles/Home.module.css";
 
@@ -19,10 +19,9 @@ export default function Home() {
 		Array(20).fill(null)
 	);
 	const [topScore, setTopScore] = useState<number>(0);
-
 	const [score, setScore] = useState<number>(0);
-
 	const [userSetLength, setUserSetLength] = useState<number>(20);
+	const [keyPressCount, setKeyPressCount] = useState<number>(0);
 
 	const fetchRandomWord = (length: number) => {
 		return fetch(`https://random-word-api.herokuapp.com/word?number=${length}`)
@@ -40,6 +39,9 @@ export default function Home() {
 			.catch((error) => console.error(error));
 	};
 
+	const totalNumberOfWords = keyPressCount / 5;
+	const wordsPerMinute = totalNumberOfWords / 1.5;
+
 	const handleButtonClick = (length: number) => {
 		setUserSetLength(length);
 		setActiveButton(length);
@@ -49,6 +51,7 @@ export default function Home() {
 			setScore(0);
 			setWordIdx(0);
 			setText("");
+			setKeyPressCount(0);
 		});
 	};
 
@@ -58,6 +61,7 @@ export default function Home() {
 		setScore(0);
 		setWordIdx(0);
 		setText("");
+		setKeyPressCount(0);
 	};
 
 	useEffect(() => {
@@ -72,7 +76,7 @@ export default function Home() {
 	// Use effect to evaluate user input
 	useEffect(() => {
 		const latestLetter = text?.charAt(text.length - 1);
-		if (latestLetter != " " && wordIdx != textSplit.length - 1) return;
+		if (latestLetter != " " && wordIdx != textSplit.length) return;
 		const textWithoutTrailingSpace = text?.trim();
 		if (textWithoutTrailingSpace === currentWord) {
 			console.log(`Current Word: ${currentWord}`);
@@ -95,10 +99,21 @@ export default function Home() {
 		}
 	}, [text, currentWord, wordIdx, textSplit]);
 
-	useEffect(() => {
-		if (wordIdx > words.length) {
-		}
-	});
+	// useEffect(() => {
+	// 	if (wordIdx > words.length && words.length > 0) {
+	// 		setCorrectWords(Array(userSetLength).fill(null));
+	// 		fetchRandomWord(userSetLength);
+	// 		setScore(0);
+	// 		setWordIdx(0);
+	// 		setText("");
+	//		setKeyPressCount(0)
+	// 	}
+	// }, [wordIdx, words.length, userSetLength]);
+
+	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		setText(e.target.value);
+		setKeyPressCount((prevCount) => prevCount + 1);
+	};
 
 	return (
 		<div className="px-20">
@@ -118,6 +133,7 @@ export default function Home() {
 					<p>
 						Your score is {score} out of {words.length}
 					</p>
+					<p>{wordsPerMinute}</p>
 				</div>
 				<div className={styles.wordsContainer}>
 					<p className={styles.mainText}>
@@ -140,7 +156,7 @@ export default function Home() {
 					<div className={styles.inputContainer}>
 						<input
 							className={styles.input}
-							onChange={(text) => setText(text.target.value)}
+							onChange={handleInputChange}
 							value={text}
 						></input>
 						<button onClick={handleTryAgain} className={styles.btn}>
