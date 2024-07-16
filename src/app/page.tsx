@@ -3,7 +3,6 @@ import quotes from "../json/quotes.json";
 import { useState, useEffect, useMemo, ReactElement } from "react";
 import classNames from "classnames";
 import styles from "../styles/Home.module.css";
-
 type Word = {
 	word: string;
 };
@@ -22,6 +21,10 @@ export default function Home() {
 	const [score, setScore] = useState<number>(0);
 	const [userSetLength, setUserSetLength] = useState<number>(20);
 	const [keyPressCount, setKeyPressCount] = useState<number>(0);
+	// Time Calculation
+	const [startTime, setStartTime] = useState<number | null>(null);
+	const [endTime, setEndTime] = useState<number | null>(null);
+	const [timeElapsed, setTimeElapsed] = useState<number | null>(null);
 
 	const fetchRandomWord = (length: number) => {
 		return fetch(`https://random-word-api.herokuapp.com/word?number=${length}`)
@@ -52,6 +55,9 @@ export default function Home() {
 			setWordIdx(0);
 			setText("");
 			setKeyPressCount(0);
+			setStartTime(null);
+			setEndTime(null);
+			setTimeElapsed(null);
 		});
 	};
 
@@ -62,6 +68,9 @@ export default function Home() {
 		setWordIdx(0);
 		setText("");
 		setKeyPressCount(0);
+		setStartTime(null);
+		setEndTime(null);
+		setTimeElapsed(null);
 	};
 
 	useEffect(() => {
@@ -97,28 +106,43 @@ export default function Home() {
 				return newCorrectWords;
 			});
 		}
+		if (wordIdx === textSplit.length - 1) {
+			setEndTime(Date.now());
+		}
 	}, [text, currentWord, wordIdx, textSplit]);
 
-	// useEffect(() => {
-	// 	if (wordIdx > words.length && words.length > 0) {
-	// 		setCorrectWords(Array(userSetLength).fill(null));
-	// 		fetchRandomWord(userSetLength);
-	// 		setScore(0);
-	// 		setWordIdx(0);
-	// 		setText("");
-	//		setKeyPressCount(0)
-	// 	}
-	// }, [wordIdx, words.length, userSetLength]);
+	// End of game
+	useEffect(() => {
+		if (wordIdx > words.length && words.length > 0) {
+			setTopScore(Math.max(topScore, score));
+		}
+	}, [wordIdx, words.length, userSetLength]);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (startTime === null) {
+			setStartTime(Date.now());
+		}
 		setText(e.target.value);
 		setKeyPressCount((prevCount) => prevCount + 1);
+	};
+
+	useEffect(() => {
+		if (startTime && endTime) {
+			setTimeElapsed((endTime - startTime) / 1000);
+		}
+	});
+
+	const calculateWPM = () => {
+		if (!timeElapsed) return 0;
+		const minutes = timeElapsed / 60;
+		const words = keyPressCount / 5;
+		return words / minutes;
 	};
 
 	return (
 		<div className="px-20">
 			<h1 className={styles.title}>TYPERACER</h1>
-			{/* <p>Top Score: {topScore}</p> */}
+			<p>Top Score: {topScore}</p>
 			<div className={styles.container}>
 				<div className={styles.settingsContainer}>
 					<div>
@@ -133,7 +157,7 @@ export default function Home() {
 					<p>
 						Your score is {score} out of {words.length}
 					</p>
-					<p>{wordsPerMinute}</p>
+					<p>WPM: {calculateWPM().toFixed(0)}</p>
 				</div>
 				<div className={styles.wordsContainer}>
 					<p className={styles.mainText}>
